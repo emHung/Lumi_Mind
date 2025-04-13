@@ -1,25 +1,53 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { Webhook } from "svix";
+
+interface WebhookResult {
+	type: string;
+	data: {
+		id: string;
+		email_addresses: Array<{ email_address: string }>;
+		first_name?: string;
+		last_name?: string;
+		image_url: string;
+		user_id?: string;
+	};
+}
 
 const http = httpRouter();
 
-http.route({
+export const clerk = http.route({
 	path: "/clerk",
 	method: "POST",
-	handler: httpAction(async (ctx, req) => {
-		const payloadString = await req.text();
-		const headerPayload = req.headers;
+	handler: httpAction(async (ctx, request) => {
+		const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+
+		if (!WEBHOOK_SECRET) {
+			throw new Error("Missing CLERK_WEBHOOK_SECRET");
+		}
+
+		const svix_id = request.headers.get("svix-id");
+		const svix_timestamp = request.headers.get("svix-timestamp");
+		const svix_signature = request.headers.get("svix-signature");
+
+		if (!svix_id || !svix_timestamp || !svix_signature) {
+			return new Response("Error occured -- no svix headers", {
+				status: 400,
+			});
+		}
+
+		const payload = await request.json();
+		const body = JSON.stringify(payload);
+
+		const wh = new Webhook(WEBHOOK_SECRET);
 
 		try {
-			const result = await ctx.runAction(internal.clerk.fulfill, {
-				payload: payloadString,
-				headers: {
-					"svix-id": headerPayload.get("svix-id")!,
-					"svix-signature": headerPayload.get("svix-signature")!,
-					"svix-timestamp": headerPayload.get("svix-timestamp")!,
-				},
-			});
+			const result = wh.verify(body, {
+				"svix-id": svix_id,
+				"svix-timestamp": svix_timestamp,
+				"svix-signature": svix_signature,
+			}) as WebhookResult;
 
 			switch (result.type) {
 				case "user.created":
@@ -28,6 +56,7 @@ http.route({
 						email: result.data.email_addresses[0]?.email_address,
 						name: `${result.data.first_name ?? "Guest"} ${result.data.last_name ?? ""}`,
 						image: result.data.image_url,
+						role: "user",
 					});
 					break;
 				case "user.updated":
@@ -51,15 +80,14 @@ http.route({
 			return new Response(null, {
 				status: 200,
 			});
-		} catch (error) {
-			console.log("Webhook Error🔥🔥", error);
-			return new Response("Webhook Error", {
+		} catch (err) {
+			console.error("Error verifying webhook:", err);
+			return new Response("Error occured", {
 				status: 400,
 			});
 		}
 	}),
 });
-
 export default http;
 
 // https://docs.convex.dev/functions/http-actions
