@@ -1,0 +1,12 @@
+{
+  "project": "lumi-mind",
+  "team": "emhung",
+  "prodUrl": "https://emhung.github.io/Lumi_Mind",
+  "functions": {
+    "http": {
+      "cors": {
+        "allowOrigin": ["https://emhung.github.io"]
+      }
+    }
+  }
+} 

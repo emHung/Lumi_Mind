@@ -4,7 +4,7 @@ const nextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
-    domains: ['img.clerk.com'],
+    domains: ['img.clerk.com', 'convex.dev'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -24,6 +24,15 @@ const nextConfig = {
   trailingSlash: true,
   // Disable server-side features
   reactStrictMode: true,
+  // Allow Convex WebSocket connections
+  async rewrites() {
+    return [
+      {
+        source: '/api/convex/:path*',
+        destination: 'https://convex.dev/api/:path*',
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 
