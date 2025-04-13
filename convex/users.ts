@@ -7,6 +7,9 @@ export const createUser = internalMutation({
 		email: v.string(),
 		name: v.string(),
 		image: v.string(),
+		medicalCondition: v.optional(v.string()),
+		interests: v.optional(v.array(v.string())),
+		role: v.union(v.literal("user"), v.literal("psychologist"), v.literal("admin")),
 	},
 	handler: async (ctx, args) => {
 		await ctx.db.insert("users", {
@@ -15,12 +18,21 @@ export const createUser = internalMutation({
 			name: args.name,
 			image: args.image,
 			isOnline: true,
+			medicalCondition: args.medicalCondition,
+			interests: args.interests ?? [],
+			role: args.role,
 		});
 	},
 });
 
 export const updateUser = internalMutation({
-	args: { tokenIdentifier: v.string(), image: v.string() },
+	args: { 
+		tokenIdentifier: v.string(), 
+		image: v.string(),
+		medicalCondition: v.optional(v.string()),
+		interests: v.optional(v.array(v.string())),
+		role: v.optional(v.union(v.literal("user"), v.literal("psychologist"), v.literal("admin"))),
+	},
 	async handler(ctx, args) {
 		const user = await ctx.db
 			.query("users")
@@ -31,9 +43,21 @@ export const updateUser = internalMutation({
 			throw new ConvexError("User not found");
 		}
 
-		await ctx.db.patch(user._id, {
+		const updateData: any = {
 			image: args.image,
-		});
+		};
+
+		if (args.medicalCondition !== undefined) {
+			updateData.medicalCondition = args.medicalCondition;
+		}
+		if (args.interests !== undefined) {
+			updateData.interests = args.interests;
+		}
+		if (args.role !== undefined) {
+			updateData.role = args.role;
+		}
+
+		await ctx.db.patch(user._id, updateData);
 	},
 });
 

@@ -8,6 +8,9 @@ export default defineSchema({
 		image: v.string(),
 		tokenIdentifier: v.string(),
 		isOnline: v.boolean(),
+		medicalCondition: v.optional(v.string()),
+		interests: v.optional(v.array(v.string())),
+		role: v.union(v.literal("user"), v.literal("psychologist"), v.literal("admin")),
 	}).index("by_tokenIdentifier", ["tokenIdentifier"]),
 
 	conversations: defineTable({
@@ -20,7 +23,7 @@ export default defineSchema({
 
 	messages: defineTable({
 		conversation: v.id("conversations"),
-		sender: v.string(), // should be string so that it doesn't throw errors in openai part ("ChatGPT")
+		sender: v.string(),
 		content: v.string(),
 		messageType: v.union(v.literal("text"), v.literal("image"), v.literal("video")),
 	}).index("by_conversation", ["conversation"]),

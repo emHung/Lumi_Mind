@@ -21,7 +21,7 @@ const MessageInput = () => {
 	const handleSendTextMsg = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
-			await sendTextMsg({ content: msgText, conversation: selectedConversation!._id, sender: me!._id });
+			await sendTextMsg({ content: msgText, conversation: selectedConversation!._id });
 			setMsgText("");
 		} catch (err: any) {
 			toast.error(err.message);
