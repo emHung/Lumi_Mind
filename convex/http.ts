@@ -88,6 +88,37 @@ export const clerk = http.route({
 		}
 	}),
 });
+
+http.route({
+	path: "/",
+	method: "GET",
+	handler: async (ctx, request) => {
+		return new Response(JSON.stringify({ hello: "world" }), {
+			headers: {
+				"Access-Control-Allow-Origin": "https://emhung.github.io",
+				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization",
+				"Content-Type": "application/json",
+			},
+		});
+	},
+});
+
+// Add CORS preflight handler
+http.route({
+	path: "/*",
+	method: "OPTIONS",
+	handler: async (ctx, request) => {
+		return new Response(null, {
+			headers: {
+				"Access-Control-Allow-Origin": "https://emhung.github.io",
+				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+				"Access-Control-Allow-Headers": "Content-Type, Authorization",
+			},
+		});
+	},
+});
+
 export default http;
 
 // https://docs.convex.dev/functions/http-actions
