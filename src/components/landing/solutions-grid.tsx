@@ -16,9 +16,9 @@ function VisionMissionCard({ title, description, icon }: VisionMissionProps) {
             <Image
               src={icon}
               alt={title}
-              width={24}
-              height={24}
-              className="text-[#3365b5]"
+              width={48}
+              height={48}
+              className="text-[#3365b5] rounded-full"
             />
           </div>
           <div>
@@ -38,12 +38,12 @@ export default function VisionMissionSection() {
     {
       title: "Tầm nhìn",
       description: "Trở thành nền tảng chăm sóc sức khỏe tinh thần đáng tin cậy và dễ tiếp cận cho các chuyên gia, sinh viên và tất cả những ai đang tìm kiếm sự cân bằng cảm xúc. Nơi mỗi cá nhân có thể tìm thấy sự đồng hành, động lực và những công cụ hỗ trợ để phát triển, duy trì sự tích cực và thành công trong công việc, học tập và cuộc sống.",
-      icon: "/icons/vision.svg"
+      icon: "/certs/logo.png"
     },
     {
       title: "Sứ mệnh",
       description: "LumiMind Haven cam kết hỗ trợ mọi người quan tâm đến sức khỏe tinh thần thông qua các giải pháp toàn diện - từ tư vấn tâm lý và liệu pháp trị liệu đến nội dung giáo dục và các hoạt động cộng đồng. Chúng tôi đặt ưu tiên vào sự an toàn, bảo mật và trải nghiệm cá nhân hóa của khách hàng, đảm bảo rằng mọi người đều cảm thấy thoải mái và được tôn trọng trong hành trình chăm sóc sức khỏe tinh thần của mình.",
-      icon: "/icons/mission.svg"
+      icon: "/certs/logo.png"
     }
   ];
 
